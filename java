@@ -1,36 +1,50 @@
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.Period;
 
-public class Main {
+public class main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
 
-        // Input nama
-        System.out.print("Masukkan nama Anda: ");
-        String nama = scanner.nextLine();
+        System.out.print("Masukkan nama: ");
+        String inputNama = input.nextLine();
 
-        // Input jenis kelamin
-        System.out.print("Masukkan jenis kelamin (P/L): ");
-        char jenisKelamin = scanner.next().charAt(0);
-        String jenisKelaminStr = (jenisKelamin == 'P' || jenisKelamin == 'p') ? "Perempuan" : "Laki-laki";
+        System.out.print("Jenis kelamin (L/P): ");
+        String inputJenisKelamin = input.next();
+        while (!inputJenisKelamin.equalsIgnoreCase("L") && !inputJenisKelamin.equalsIgnoreCase("P")) {
+            System.out.println("Masukkan jenis kelamin yang valid (L/P): ");
+            inputJenisKelamin = input.next();
+        }
 
-        // Input tanggal lahir
-        System.out.print("Masukkan tanggal lahir (yyyy-MM-dd): ");
-        String tanggalLahirStr = scanner.next();
+        String jeniskelaminlengkap = inputJenisKelamin.equalsIgnoreCase("L") ? "Laki-Laki" : "Perempuan";
 
-        // Konversi tanggal lahir ke LocalDate
-        LocalDate tanggalLahir = LocalDate.parse(tanggalLahirStr);
+        System.out.print("Tanggal lahir (dd-mm-yyyy): ");
+        String inputTanggalLahir = input.next();
+        while (!isValidDateFormat(inputTanggalLahir)) {
+            System.out.println("Format tanggal tidak valid. Masukkan kembali (dd-MM-yyyy): ");
+            inputTanggalLahir = input.next();
+        }
 
-        // Hitung umur
-        LocalDate tanggalSekarang = LocalDate.now();
-        Period periode = Period.between(tanggalLahir, tanggalSekarang);
-        int umur = periode.getYears();
+        DateTimeFormatter formattanggal = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate tanggallahir = LocalDate.parse(inputTanggalLahir, formattanggal);
+        LocalDate waktuterkini = LocalDate.now();
+        int tahun = Period.between(tanggallahir, waktuterkini).getYears();
+        int bulan = Period.between(tanggallahir, waktuterkini).getMonths();
 
-        // Output data diri
-        System.out.println("\nData diri Anda:");
-        System.out.println("Nama: " + nama);
-        System.out.println("Jenis Kelamin: " + jenisKelaminStr);
-        System.out.println("Umur: " + umur + " tahun");
+        System.out.format("\nNama: %s\n", inputNama);
+        System.out.format("Jenis Kelamin: %s\n", jeniskelaminlengkap);
+        System.out.format("Umur Anda: %d tahun %d bulan\n", tahun, bulan);
+        input.close();
+    }
+
+    private static boolean isValidDateFormat(String date) {
+        try {
+            DateTimeFormatter formattanggal = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate.parse(date, formattanggal);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
